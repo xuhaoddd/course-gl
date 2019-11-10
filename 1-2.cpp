@@ -2,86 +2,86 @@
 #include <math.h>
 #include <GL/glut.H>
 
-//�����_�����O�̊֐�
+//レンダリングの関数
 void display(void){ 
-  //�X�N���[���ƕϊ��s���������
+  //スクリーンと変換行列を初期化
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
   glLoadIdentity();
   
-  //�ۑ�1��2�̃A�t�B���ϊ��͂����ɏ���
-  //�ۑ�2�ł̓X�^�b�N�𗘗p����Ɗy
+  //課題1と2のアフィン変換はここに書く
+  //課題2ではスタックを利用すると楽
   
-  //�e�B�[�|�b�g�������_�����O (0.5�͑傫��)
+  //ティーポットをレンダリング (0.5は大きさ)
   glutSolidTeapot(0.5);
   
-  glFlush(); //�X�N���[���֕\��
+  glFlush(); //スクリーンへ表示
 } 
 
-//�E�B���h�E�̑傫�����ς�������ɌĂ΂��֐�
+//ウィンドウの大きさが変わった時に呼ばれる関数
 void myReshape(int w, int h){
-  glViewport(0, 0, w, h); //�X�N���[���̑傫�������߂�
+  glViewport(0, 0, w, h); //スクリーンの大きさを決める
   
-  //�ϊ��s���ݒ�
+  //変換行列を設定
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
   
-  //���s���e�̂��߂̃p�����[�^��ݒ�
-  //�ۑ�5�̓����ϊ��͈ȉ���u��������
+  //平行投影のためのパラメータを設定
+  //課題5の透視変換は以下を置き換える
   if (w < h) 
     glOrtho(-1.0, 1.0, - h/w, h/w, -10.0, 10.0); 
   else 
     glOrtho(-w/h, w/h, -1.0, 1.0, -10.0, 10.0);
   
-  glMatrixMode(GL_MODELVIEW); //�}�`�`�惂�[�h�֐؂�ւ�
+  glMatrixMode(GL_MODELVIEW); //図形描画モードへ切り替え
 } 
 
-//OpenGL �̏�����
+//OpenGL の初期化
 void myinit(){
-  //�����̓���
-  //�ۑ�4�̌����̒ǉ��͈ȉ����R�s�[���ă��C�g��1�Ԃ�ON�ɂ���
+  //光源の特性
+  //課題4の光源の追加は以下をコピーしてライトの1番をONにする
   GLfloat light_ambient[]={1.0, 1.0, 1.0, 1.0};
   GLfloat light_diffuse[]={1.0, 1.0, 1.0, 1.0};
   GLfloat light_specular[]={1.0, 1.0, 1.0, 1.0};
   
-  //�����̓����� OpenGL �֑���
+  //光源の特性を OpenGL へ送る
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
   
-  glEnable(GL_LIGHTING); //���C�g���g��
-  glEnable(GL_LIGHT0);   //���C�g0�Ԃ��I��
+  glEnable(GL_LIGHTING); //ライトを使う
+  glEnable(GL_LIGHT0);   //ライト0番をオン
   
-  //�I�u�W�F�N�g�̔��˓���
-  //�ۑ�R�̔��˓����͈ȉ��̒l��ύX����
+  //オブジェクトの反射特性
+  //課題３の反射特性は以下の値を変更する
   GLfloat mat_specular[]={0.5, 0.5, 0.5, 1.0};
   GLfloat mat_diffuse[]={0.5, 0.5, 1.0, 1.0};
   GLfloat mat_ambient[]={0.1, 0.1, 0.2, 1.0}; 
   GLfloat mat_shininess=20.0;
   
-  //�I�u�W�F�N�g�̔��˓����� OpenGL �֑���
+  //オブジェクトの反射特性を OpenGL へ送る
   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
   glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
   glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
   
-  //���̑��̐ݒ�
-  glShadeModel(GL_FLAT);   //�|���S���x�^�h��
-  glEnable(GL_DEPTH_TEST); //�A�ʏ������s��
+  //その他の設定
+  glShadeModel(GL_FLAT);   //ポリゴンベタ塗り
+  glEnable(GL_DEPTH_TEST); //陰面消去を行う
   
-  glClearColor (1.0, 1.0, 1.0, 1.0); //�w�i�̐F
+  glClearColor (1.0, 1.0, 1.0, 1.0); //背景の色
 }
 
 int main(int argc, char** argv){
-  //�E�B���h�E�̏�����
+  //ウィンドウの初期化
   glutInit(&argc, argv); 
-  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH); //�g�p����o�b�t�@�̐ݒ�
-  glutInitWindowSize(500, 500); //�E�B���h�E�̑傫��
-  glutCreateWindow("1-2"); //�E�B���h�E�̃^�C�g��
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH); //使用するバッファの設定
+  glutInitWindowSize(500, 500); //ウィンドウの大きさ
+  glutCreateWindow("1-2"); //ウィンドウのタイトル
   
-  myinit();//OpenGL �̏�����
-  glutReshapeFunc(myReshape);//�E�B���h�E�T�C�Y���ύX���ꂽ���ɌĂ΂��֐���ݒ�
-  glutDisplayFunc(display); //�E�B���h�E�̍X�V�̂��߂̊֐���ݒ�
-  glutMainLoop(); //���C�����[�v
+  myinit();//OpenGL の初期化
+  glutReshapeFunc(myReshape);//ウィンドウサイズが変更された時に呼ばれる関数を設定
+  glutDisplayFunc(display); //ウィンドウの更新のための関数を設定
+  glutMainLoop(); //メインループ
   
   return 0;
 }
