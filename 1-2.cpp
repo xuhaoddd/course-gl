@@ -2,15 +2,19 @@
 #include <math.h>
 #include <GL/glut.H>
 
-//レンダリングの関数
 void display(void){ 
   //スクリーンと変換行列を初期化
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
   glLoadIdentity();
-  
   //課題1と2のアフィン変換はここに書く
+  glRotatef(90, 1, 0, 0);
   //課題2ではスタックを利用すると楽
-  
+  glPushMatrix();
+  glRotatef(90, -1, 0, 0);
+  glRotatef(90, 0, 1, 0);
+  glPushMatrix();
+  glPopMatrix();
+  glPopMatrix();//pop一次是左视图，pop两次是俯视图
   //ティーポットをレンダリング (0.5は大きさ)
   glutSolidTeapot(0.5);
   
