@@ -47,7 +47,19 @@ void flipUpDown() {
 void detectEdge(){
   //勾配を計算して、長さが適当な値より大きければ
   //edge[i] へ 1 を代入する
-  
+	for (int j = 1; j < H-1; j++) {
+		for (int i = 1; i < W - 1; i++) {
+			float diff_x = (f[j][i + 1] - f[j][i - 1]) / (2 * h);
+			float diff_y = (f[j+1][i] - f[j-1][i]) / (2 * h);
+			float gra = sqrt(pow(diff_x, 2) + pow(diff_y, 2));
+			if (gra > 10.0) {
+				edge[j][i] = 1;
+				}
+			else {
+				edge[j][i] = 0;	
+			}
+		}
+  }
   
 }
 
@@ -56,17 +68,44 @@ void detectEdge(){
 void smooth(){
   //for 文で上下左右の値の平均値を temp[j][i] へ代入していき、
   //終わったら 新たな for 文で tmp[j][i] を f[j][i] へ代入する
-  
-  
+	for (int j = 1; j < H - 1; j++) {
+		for (int i = 1; i < W - 1; i++) {
+			tmp[j][i] = (f[j - 1][i] + f[j + 1][i] + f[j][i - 1] + f[j][i + 1]) / 4.0;
+		}
+	}
+	for (int j = 1; j < H - 1; j++) {
+		for (int i = 1; i < W - 1; i++) {
+			f[j][i] = tmp[j][i];
+		}
+	}
 }
 
+float weight(float dif) {
+	return 1.0 / (1 + pow(1 / ( h * h), 2) * dif * dif);
+}
 
 //課題5-2 (エッジ保存平滑化)
 void adaptiveSmooth(){
   //for 文で上下左右の値の平均値を temp[j][i] へ代入していき、
   //終わったら 新たな for 文で tmp[j][i] を f[j][i] へ代入する
   float s = 1/(h*h); //パラメータ
-  
+  for (int j = 1; j < H - 1; j++) {
+	  for (int i = 1; i < W - 1; i++) {
+		  tmp[j][i] = (weight(f[j - 1][i] - f[j][i]) * f[j - 1][i]
+			  + weight(f[j + 1][i] - f[j][i]) * f[j + 1][i]
+			  + weight(f[j][i - 1] - f[j][i]) * f[j][i - 1]
+			  + weight(f[j][i + 1] - f[j][i]) * f[j][i + 1])
+			  / ((weight(f[j - 1][i] - f[j][i]))
+				  + weight(f[j + 1][i] - f[j][i])
+				  + weight(f[j][i - 1] - f[j][i])
+				  + weight(f[j][i + 1] - f[j][i]));
+	  }
+  }
+  for (int j = 1; j < H - 1; j++) {
+	  for (int i = 1; i < W - 1; i++) {
+		  f[j][i] = tmp[j][i];
+	  }
+  }
   
 }
 

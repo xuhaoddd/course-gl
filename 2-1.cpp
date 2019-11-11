@@ -55,7 +55,20 @@ void drawData(){
 void detectEdge(){
   //1階微分値を計算して、絶対値が適当な値より大きければ
   //edge[i] へ 1 を代入する
-  
+	for (int i = 1; i < N-1; i++)
+	{
+		float f_dif = (f[i + 1] - f[i - 1]) / (2.0 * h);
+		if (fabs(f_dif) > 5.0)
+		{
+			edge[i] = 1;
+		}
+		else
+			edge[i] = 0;
+  }
+	for(int j=0;j<1000;j++)
+	{ 
+		printf("%d\n", edge[j]);
+	}
   
 }
 
@@ -65,7 +78,15 @@ void drawEdge(){
   //for で edge[i] を調べて、1 だったら点を描く
   glPointSize(5);
   glColor3f(1,0,0); //色は赤 (変えてもよい)
-  
+  glBegin(GL_POINTS);
+  for (int i = 0; i < N ; i++)
+  {
+	  if (edge[i] == 1)
+	  {
+		  glVertex3f(float(i*h), f[i], 0);
+	  }
+  }
+  glEnd();
   
 }
 
@@ -76,10 +97,18 @@ void smooth(){
   
   //for 文で左右の値の平均値を temp[i] へ代入していき、
   //終わったら 新たな for 文で tmp[i] を f[i] へ代入する
-  
-  
+  for (int i = 1; i < N-1; i++) {
+	  tmp[i] = (f[i - 1] + f[i + 1]) / 2.0;
+
+  }
+  for (int i = 1; i < N - 1; i++) {
+	  f[i] = tmp[i];
+  }
 }
 
+float weight(float dif) {
+	return 1.0 / (1 + pow(1 / (100 * h * h), 2) * dif * dif);
+}
 
 //課題5-1 (エッジ保存平滑化)
 void adaptiveSmooth(){
@@ -88,7 +117,13 @@ void adaptiveSmooth(){
   //for 文で左右の値の重み付き平均値を temp[i] へ代入していき、
   //終わったら 新たな for 文で tmp[i] を f[i] へ代入する
   float s = 1/(100*h*h); //パラメータ
-  
+  for (int i = 1; i < N - 1; i++) {
+	  tmp[i] = (weight(f[i - 1] - f[i])*f[i-1]+ weight(f[i + 1] - f[i]) * f[i + 1])/
+		  (weight(f[i - 1] - f[i])+ weight(f[i + 1] - f[i]));
+  }
+  for (int i = 1; i < N - 1; i++) {
+	  f[i] = tmp[i];
+  }
   
 }
 
