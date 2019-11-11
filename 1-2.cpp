@@ -31,10 +31,16 @@ void myReshape(int w, int h){
   
   //平行投影のためのパラメータを設定
   //課題5の透視変換は以下を置き換える
+  /*
   if (w < h) 
     glOrtho(-1.0, 1.0, - h/w, h/w, -10.0, 10.0); 
   else 
     glOrtho(-w/h, w/h, -1.0, 1.0, -10.0, 10.0);
+  */
+
+  gluPerspective(60, w / h, -5, 5);
+  gluLookAt(0, 0, -9, 0, 0, 0, 0, 1, 0);
+
   
   glMatrixMode(GL_MODELVIEW); //図形描画モードへ切り替え
 } 
@@ -44,23 +50,28 @@ void myinit(){
   //光源の特性
   //課題4の光源の追加は以下をコピーしてライトの1番をONにする
   GLfloat light_ambient[]={1.0, 1.0, 1.0, 1.0};
-  GLfloat light_diffuse[]={1.0, 1.0, 1.0, 1.0};
+  GLfloat light_diffuse[]={0.0, 0.0, 1.0, 1.0};
   GLfloat light_specular[]={1.0, 1.0, 1.0, 1.0};
+  GLfloat light_position[] = { 0.0, 0.0, 5.0, 1.0 };
+
   
   //光源の特性を OpenGL へ送る
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
   
   glEnable(GL_LIGHTING); //ライトを使う
   glEnable(GL_LIGHT0);   //ライト0番をオン
   
   //オブジェクトの反射特性
   //課題３の反射特性は以下の値を変更する
-  GLfloat mat_specular[]={0.5, 0.5, 0.5, 1.0};
-  GLfloat mat_diffuse[]={0.5, 0.5, 1.0, 1.0};
-  GLfloat mat_ambient[]={0.1, 0.1, 0.2, 1.0}; 
-  GLfloat mat_shininess=20.0;
+  //matetial可以查表  https://blog.51cto.com/fengyuzaitu/1897263
+  GLfloat mat_specular[]={ 0.628281, 0.555802, 0.366065, 1.000000 };
+  GLfloat mat_diffuse[]={ 0.751640, 0.606480, 0.226480, 1.000000 };
+  GLfloat mat_ambient[]={ 0.247250, 0.199500, 0.074500, 1.000000};
+  GLfloat mat_shininess=51.2;
   
   //オブジェクトの反射特性を OpenGL へ送る
   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
