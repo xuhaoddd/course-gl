@@ -18,10 +18,12 @@ void drawData(){
   glColor3f(0.8,1,0.8); //色は緑 (変えてもよい)
   //以下を埋める
   //for文を使って直線を立てていく
+  /*
   for (int i = 0; i < N; i++)
   {
 	  printf("%f ",f[i]);
   }
+  */
   glBegin(GL_LINES);
   float j = 0;
   for (int i = 0; i < N; i++)
@@ -65,11 +67,12 @@ void detectEdge(){
 		else
 			edge[i] = 0;
   }
+	/*
 	for(int j=0;j<1000;j++)
 	{ 
 		printf("%d\n", edge[j]);
 	}
-  
+  */
 }
 
 
@@ -134,8 +137,14 @@ void CannyEdgeDetector(){
   
   //まず for で d[i] へ1階微分の大きさを代入する
   //そして, 新しい for でエッジの判定をする。(エッジなら edge[i] へ 1 を代入)
-  
-  
+  for (int i = 1; i < N; i++) {
+	  d[i] = fabs((f[i + 1] - f[i - 1]) / (2.0 * h));
+  }
+  for (int i = 2; i < N - 2; i++)
+	  if (d[i] > d[i - 1] && d[i] > d[i + 1] && d[i] > 3) //ある程度急なときだけ
+		  edge[i] = 1;
+	  else
+		  edge[i] = 0;
 }
 
 //課題7-1 (凹凸の判定)

@@ -114,9 +114,56 @@ void adaptiveSmooth(){
 void CannyEdgeDetector(){
   //まず1回目のループで dx[j][i], dy[j][i] へ勾配ベクトルを代入。dl[i][j] へ長さを代入
   //そして, 2回目のループでエッジの判定をする。(エッジなら edge[i] へ 1 を代入)
-  
-  
+	for (int j = 1; j < H - 1; j++)
+		for (int i = 1; i < W - 1; i++) {
+			dx[j][i] = (f[j][i + 1] - f[j][i - 1]) / (2.0 * h);
+			dy[j][i] = (f[j + 1][i] - f[j - 1][i]) / (2.0 * h);
+			gl[j][i] = sqrt(dx[j][i] * dx[j][i] + dy[j][i] * dy[j][i]);
+		}
+
+	for (int j = 2; j < H - 2; j++)
+		for (int i = 2; i < W - 2; i++) {
+			float a = dy[j][i] / dx[j][i]; //直線の傾き
+			if (fabs(a) < 1) { //横方向で交わる
+				if (a > 0) { //右は上、左は下
+					if ((1 - a) * gl[j][i + 1] + a * gl[j + 1][i + 1] < gl[j][i] &&
+						(1 - a) * gl[j][i - 1] + a * gl[j - 1][i - 1] < gl[j][i] &&
+						10.0< gl[j][i])
+						edge[j][i] = 1;
+					else
+						edge[j][i] = 0;
+				}
+				else { //右は下、左は上
+					if ((1 + a) * gl[j][i + 1] - a * gl[j - 1][i + 1] < gl[j][i] &&
+						(1 + a) * gl[j][i - 1] - a * gl[j + 1][i - 1] < gl[j][i] &&
+						10.0 < gl[j][i])
+						edge[j][i] = 1;
+					else
+						edge[j][i] = 0;
+				}
+			}
+			else { //縦方向で交わる
+				a = dx[j][i] / dy[j][i];
+				if (a > 0) { //上は右、下は左
+					if ((1 - a) * gl[j + 1][i] + a * gl[j + 1][i + 1] < gl[j][i] &&
+						(1 - a) * gl[j - 1][i] + a * gl[j - 1][i - 1] < gl[j][i] &&
+						10.0 < gl[j][i])
+						edge[j][i] = 1;
+					else
+						edge[j][i] = 0;
+				}
+				else { //上は左、下は右
+					if ((1 + a) * gl[j + 1][i] - a * gl[j + 1][i - 1] < gl[j][i] &&
+						(1 + a) * gl[j - 1][i] - a * gl[j - 1][i + 1] < gl[j][i] &&
+						10.0 < gl[j][i])
+						edge[j][i] = 1;
+					else
+						edge[j][i] = 0;
+				}
+			}
+		}
 }
+  
 
 
 //課題7-2 (凹凸の判定)
