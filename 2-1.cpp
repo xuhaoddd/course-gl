@@ -153,7 +153,14 @@ void segment(){
   //正なら convex[i] へ 1 を代入
   //負なら convex[i] へ 0 を代入
   //もしもゼロなら convex[i] へ -1 を代入
-  
+	for (int i = 1; i < N - 1; i++) {
+		if ((f[i + 1] + f[i - 1] - 2 * f[i]) / (h * h) < 0)
+			convex[i] = 0;
+		else if ((f[i + 1] + f[i - 1] - 2 * f[i]) / (h * h) > 0)
+			convex[i] = 1;
+		else
+			convex[i] = -1;
+	}
   
 }
 
@@ -162,7 +169,18 @@ void segment(){
 void drawSegment(){
   //for で convex[i] を調べて、0 なら黄色、1なら水色の点を描く
   glPointSize(5);
-  
+  glBegin(GL_POINTS);
+  for (int i = 1; i < N - 1; i++) {
+	  if (convex[i] == 1) {
+		  glColor3f(0, 1, 1.0);
+		  glVertex3f(float(h * i), f[i], 0);
+	  }
+	  else if (convex[i] == 0) {
+		  glColor3f(1.0, 1, 0);
+		  glVertex3f(float(h * i), f[i], 0);
+	  }
+  }
+  glEnd();
   
 }
 
@@ -178,6 +196,7 @@ void display(void){
   drawEdge();//エッジを描く
   drawSegment();
   
+  
   glFlush(); //スクリーンを更新
 }
 
@@ -187,7 +206,7 @@ void readValues(const char* file_name){
   fopen_s(&in, file_name, "r");
   
   fscanf_s(in, "%d", &N);
-  for(int i=0; i<N; i++){
+  for(int i=0; i<N; i++){//读入数据与edge和convex的初始化
     fscanf_s(in, "%f", &f[i]);
     edge[i] = 0; //エッジでないようにしておく
     convex[i] = -1; //凹凸は不明にしておく

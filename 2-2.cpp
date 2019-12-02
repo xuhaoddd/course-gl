@@ -173,6 +173,22 @@ void segment(){
   //②なら convex[j][i] へ 1 を代入
   //③なら convex[j][i] へ 2 を代入
   //もしもその他なら convex[j][i] へ -1 を代入
+	for (int j = 1; j < H - 1; j++) {
+		for (int i = 1; i < W - 1; i++) {
+			float xx = f[j][i + 1] + f[j][i - 1] - 2.0 * f[j][i];
+			float yy = f[j + 1][i] + f[j - 1][i] - 2.0 * f[j][i];
+			float xy = 0.25f * (f[j + 1][i + 1] + f[j - 1][i - 1] - f[j + 1][i - 1] - f[j - 1][i + 1]);
+			if (xx * yy - xy * xy < 0)
+				convex[j][i] = 2;
+			else if (xx + yy > 0)
+				convex[j][i] = 0;
+			else if (xx + yy < 0)
+				convex[j][i] = 1;
+			else
+				convex[j][i] = -1;
+		}
+	}
+
   
   
 }
