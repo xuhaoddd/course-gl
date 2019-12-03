@@ -1,48 +1,50 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <math.h>
 #include <GL/glut.H>
 
-//���_���ƒ��_���W�̔z�� (�������̓t�@�C����ǂ񂾎��Ɋm�ۍς�)
+//頂点数と頂点座標の配列 (メモリはファイルを読んだ時に確保済み)
 int verN;
 float (*ver)[3];
 
-//�O�p�`���ƎO�p�`�̒��_�ԍ��̔z�� (�������̓t�@�C����ǂ񂾎��Ɋm�ۍς�)
+//三角形数と三角形の頂点番号の配列 (メモリはファイルを読んだ時に確保済み)
 int triN;
 int (*tri)[3];
 
-//�O�p�`�̖@�� (�T�C�Y�� triN �~ 3)
-//�ۑ�2-2�Ōv�Z���� (�������̓t�@�C����ǂ񂾎��Ɋm�ۍς�)
+//三角形の法線 (サイズは triN × 3)
+//課題2-2で計算する (メモリはファイルを読んだ時に確保済み)
 float (*norT)[3];
 
-//���_�̖@�� (�T�C�Y�� verN �~ 3)
-//�ۑ�2-3�Ōv�Z���� (�������̓t�@�C����ǂ񂾎��Ɋm�ۍς�)
+//頂点の法線 (サイズは verN × 3)
+//課題2-3で計算する (メモリはファイルを読んだ時に確保済み)
 float (*norV)[3];
 
-//���v���V�A�� (�T�C�Y�� verN �~ 3)
-//�ۑ�3 �Ōv�Z���� (�������̓t�@�C����ǂ񂾎��Ɋm�ۍς�)
+//ラプラシアン (サイズは verN × 3)
+//課題3 で計算する (メモリはファイルを読んだ時に確保済み)
 float (*lap)[3];
-//�אڒ��_�𐔂��邽�߂̔z��
+//隣接頂点を数えるための配列
 int *neiN;
 
 
-//�ۑ�2-2 : �O�p�`�̖@�����v�Z����֐�
+//課題2-2 : 三角形の法線を計算する関数
 void computeTriangleNormals(){
   for(int i=0; i<triN; i++){
-    //�z��̓Y�����������Ȃ�̂ŕϐ��ɑ�����Ă���
+    //配列の添え字が長くなるので変数に代入しておく
     int* t = tri[i];
-    float* A = ver[ t[0] ]; // A[0] �� x���W�AA[1] �� y���W�AA[2] �� z���W�ɂȂ�
+    float* A = ver[ t[0] ]; // A[0] は x座標、A[1] は y座標、A[2] は z座標になる
     float* B = ver[ t[1] ];
     float* C = ver[ t[2] ];
     
-    //�ۑ�͈ȉ��𐳂�������
-    //�x�N�g�� AB �� �x�N�g�� AC �̊O��
-    float cx = 0;//??
-    float cy = 0;//??
-    float cz = 0;//??
+    //課題は以下を正しく直す
+    //ベクトル AB と ベクトル AC の外積
+
+	float cx = (B[1] - A[1]) * (C[2] - A[2]) - (B[2] - A[2]) * (C[1] - A[1]);
+	float cy = (B[2] - A[2]) * (C[0] - A[0]) - (B[0] - A[0]) * (C[2] - A[2]);
+	float cz = (B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0]);
+	//根据外积计算公式计算 向量AB与向量AC的外积
     
-    //�������v�Z���Đ��K������
+    //長さを計算して正規化する
     float l = sqrt(cx*cx + cy*cy + cz*cz);
-    if(l != 0){ //����Z���Ė�����ɂȂ�Ȃ��悤�ɂ���
+    if(l != 0){ //割り算して無限大にならないようにする
       norT[i][0] = cx/l;
       norT[i][1] = cy/l;
       norT[i][2] = cz/l;
@@ -50,74 +52,138 @@ void computeTriangleNormals(){
   }
 }
 
-//�ۑ�2-4 : ���_�@�����v�Z����֐�
+//課題2-4 : 頂点法線を計算する関数
 void computeVertexNormals(){
-  //���ׂĂ̒��_�@�����[���x�N�g���ɂ���
+  //すべての頂点法線をゼロベクトルにする
   for(int i=0; i<verN; i++){
-    //??
+	  norV[i][0] = 0;
+	  norV[i][1] = 0;
+	  norV[i][2] = 0;
   }
   
-  //�e�O�p�`�ɂ�����
+  //各三角形において
   for(int i=0; i<triN; i++){
-     //�O�p�`��2�ӂ̊O�ς��v�Z����
-    //??
+     //三角形の2辺の外積を計算して
+	  int* t = tri[i];
+	  float* A = ver[tri[i][0]];
+	  float* B = ver[tri[i][1]];
+	  float* C = ver[tri[i][2]];
+
+	  float cx = (B[1] - A[1]) * (C[2] - A[2]) - (B[2] - A[2]) * (C[1] - A[1]);
+	  float cy = (B[2] - A[2]) * (C[0] - A[0]) - (B[0] - A[0]) * (C[2] - A[2]);
+	  float cz = (B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0]);
     
-    //����ꂽ�O�σx�N�g�������̎O�p�`���Ȃ�3���_�̖@���֑�������
+    //得られた外積ベクトルをその三角形をなす3頂点の法線へ足しこむ
     //??
+	  for (int j = 0; j < 3; j++) {
+		  norV[t[j]][0] += cx;
+		  norV[t[j]][1] += cy;
+		  norV[t[j]][2] += cz;
+	  }
+  
   }
   
-  //���ׂĂ̒��_�@���𐳋K������
+  //すべての頂点法線を正規化する
   for(int i=0; i<verN; i++){
     //??
+	  float* n = norV[i];
+	  float l = (float)sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+	  if (l != 0) {
+		  n[0] /= l;
+		  n[1] /= l;
+		  n[2] /= l;
+	  }
   }
 }
 
-//�ۑ� 3-1 : ���v���V�A���̌v�Z
+//課題 3-1 : ラプラシアンの計算
 void computeLaplacians(){
-  //�S�Ă̒��_�ɂ�����
-  //���v���V�A�� lap[i][0], lap[i][1], lap[i][2] ���[���ɂ���
-  //�אڒ��_�� neiN[i] ���[���ɂ���
+  //全ての頂点において
+  //ラプラシアン lap[i][0], lap[i][1], lap[i][2] をゼロにする
+  //隣接頂点数 neiN[i] をゼロにする
   //??
+	for (int i = 0; i < verN; i++) {
+		lap[i][0] = 0;
+		lap[i][1] = 0;
+		lap[i][2] = 0;
+		neiN[i] = 0;
+	}
   
-  //�e�O�p�`�ɂ�����
+  //各三角形において
   for(int i=0; i<triN; i++){
-    //�e�ӂ̃x�N�g�����n�_�̃��v���V�A���ɑ���
-    //�e���_�̗אڒ��_�����P���₷
+    //各辺のベクトルを始点のラプラシアンに足し
+    //各頂点の隣接頂点数を１増やす
     //???
+	  int* t = tri[i];
+	  float* A = ver[t[0]];
+	  float* B = ver[t[1]];
+	  float* C = ver[t[2]];
+
+	  //ベクトル AB を A のラプラシアンに足し
+	  lap[t[0]][0] += B[0] - A[0];
+	  lap[t[0]][1] += B[1] - A[1];
+	  lap[t[0]][2] += B[2] - A[2];
+	  //A の隣接頂点数を 1 増やす
+	  neiN[t[0]] = neiN[t[0]] + 1;
+
+	  //ベクトル BC を B のラプラシアンに足し
+	  lap[t[1]][0] += C[0] - B[0];
+	  lap[t[1]][1] += C[1] - B[1];
+	  lap[t[1]][2] += C[2] - B[2];
+	  //B の隣接頂点数を 1 増やす
+	  neiN[t[1]] = neiN[t[1]] + 1;
+
+	  //ベクトル CA を C のラプラシアンに足し
+	  lap[t[2]][0] += A[0] - C[0];
+	  lap[t[2]][1] += A[1] - C[1];
+	  lap[t[2]][2] += A[2] - C[2];
+	  //C の隣接頂点数を 1 増やす
+	  neiN[t[2]] = neiN[t[2]] + 1;
   }
   
-  //�S�Ă̒��_�ɂ����ă��v���V�A����אڒ��_���Ŋ���
+  //全ての頂点においてラプラシアンを隣接頂点数で割る
   //??
+  for (int i = 0; i < verN; i++) {
+	  lap[i][0] /= neiN[i];
+	  lap[i][1] /= neiN[i];
+	  lap[i][2] /= neiN[i];
+  }
+
 }
 
-//�ۑ� 3-2 : ���v���V�A��������
+//課題 3-2 : ラプラシアン平滑化
 void laplacianSmoothing(){
-  //���v���V�A�����v�Z����
+  //ラプラシアンを計算する
   computeLaplacians();
   
-  //�ۑ� 3-3 �ł͂��̒l�𕉂ɂ��Ă݂�
-  float dt = 0.5; //0�`1�̒l������ 
+  //課題 3-3 ではこの値を負にしてみる
+  float dt = 0.5; //0～1の値を入れる 
   
-  //�e���_�� dt �~ ���v���V�A���𑫂� (�����𖄂߂�̂��ۑ� 3-2)
+  //各頂点へ dt × ラプラシアンを足す (ここを埋めるのが課題 3-2)
   //??
+  for (int i = 0; i < verN; i++) {
+	  ver[i][0] = ver[i][0] + dt * lap[i][0];
+	  ver[i][1] = ver[i][1] + dt * lap[i][1];
+	  ver[i][2] = ver[i][2] + dt * lap[i][2];
+  }
 }
 
 
-/************ ���̉��͉ۑ�ɂ͊֌W�̂Ȃ��֐� (�݂Ȃ��Ă悢) *****************/
+/************ この下は課題には関係のない関数 (みなくてよい) *****************/
 
-//�ϐ����낢��
+//変数いろいろ
 int mouseX, mouseY;
 float qw, qx, qy, qz;
 float zoom;
 float shiftX, shiftY;
 bool wire, flat, smooth, cur;
 int width, height;
-float aveE; //�ӂ̕��ς̒��� (���ʂ̐F�Â��Ɏg��)
+float aveE; //辺の平均の長さ (凹凸の色づけに使う)
 
-//���C���[�ŕ\������
+//ワイヤーで表示する
 void drawWire(){
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDisable(GL_LIGHTING); //���C�g�� OFF
+  glDisable(GL_LIGHTING); //ライトを OFF
   
   glColor3f(0.4, 0.4, 0.4);
   for(int i=0; i<triN; i++){
@@ -130,7 +196,7 @@ void drawWire(){
   }
 }
 
-//�t���b�g�V�F�[�f�B���O
+//フラットシェーディング
 void flatShading(){
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glShadeModel(GL_FLAT); 
@@ -147,7 +213,7 @@ void flatShading(){
   }
 }
 
-//�X���[�X�V�F�[�f�B���O
+//スムースシェーディング
 void smoothShading(){
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glShadeModel(GL_SMOOTH);  
@@ -169,14 +235,14 @@ void smoothShading(){
 void curvature(){
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glShadeModel(GL_SMOOTH);  
-  glDisable(GL_LIGHTING); //���C�g��OFF
+  glDisable(GL_LIGHTING); //ライトをOFF
   
   for(int i=0; i<triN; i++){
     int *t = tri[i];
     glBegin(GL_POLYGON);
     for(int j=0; j<3; j++){
       float dot = lap[t[j]][0]*norV[t[j]][0] + lap[t[j]][1]*norV[t[j]][1] + lap[t[j]][2]*norV[t[j]][2];
-      float c = -5.0*dot/aveE + 0.5; //�F���悭�t���悤�ɒl�������L�΂�
+      float c = -5.0*dot/aveE + 0.5; //色がよく付くように値を引き伸ばす
       glColor3f(c, c, c);
       glVertex3fv(ver[t[j]]);
     }
@@ -193,7 +259,7 @@ void display(void){
   if(s != 0)
     glRotatef(2.0f*(float)acos(qw)*180/3.1412f, qx/s, qy/s,qz/s);
   
-  //���b�V���̃����_�����O
+  //メッシュのレンダリング
   if(wire)
     drawWire();
   if(flat)
@@ -277,7 +343,7 @@ void normalizeSize(float length){
     for(int j=0; j<verN; j++)
       ver[j][i] = scale*(ver[j][i] - mid[i]);
   
-  //�ӂ̕��ς̒������v�Z���Ă���
+  //辺の平均の長さを計算しておく
   double total = 0;
   for(int i=0; i<triN; i++){
     int* t = tri[i];
@@ -338,7 +404,7 @@ void myReshape(int w, int h){
   glMatrixMode(GL_MODELVIEW); 
 } 
 
-//�}�E�X����
+//マウス操作
 void mouse(int btn, int state, int x, int y){ 
   if(state == GLUT_DOWN){
     mouseX = x;
@@ -348,7 +414,7 @@ void mouse(int btn, int state, int x, int y){
     float mx = -0.0025f*(x - mouseX)/zoom;
     float my = 0.0025f*(y - mouseY)/zoom;
     
-    //��]
+    //回転
     float c = (float)cos(my);
     float s = (float)sin(my);
     
@@ -378,30 +444,30 @@ void mouse(int btn, int state, int x, int y){
     }
     display();
   }
-  else if(btn==GLUT_RIGHT_BUTTON){ //�g��k��
+  else if(btn==GLUT_RIGHT_BUTTON){ //拡大縮小
     zoom -= 0.0025f*(y - mouseY);
     if(zoom > 20.0f) zoom = 20.0f;
     else if(zoom < 0.05f) zoom = 0.05f;
     myReshape(width, height);
     display();
   }
-  else if(btn==GLUT_MIDDLE_BUTTON){ //���s�ړ�
+  else if(btn==GLUT_MIDDLE_BUTTON){ //平行移動
     shiftX += 0.0025f*(x - mouseX)/zoom;
     shiftY += 0.0025f*(y - mouseY)/zoom;
     display();
   }
 } 
 
-//�L�[�������ꂽ���ɑΉ�����֐����Ăяo��
+//キーが押された時に対応する関数を呼び出す
 void keyboard(unsigned char key, int x, int y){
   switch (key) {
   case 'w':
-    printf("���C���[�\���؂�ւ�\n");
+    printf("ワイヤー表示切り替え\n");
     wire = !wire;
     display();
     break;
   case 'f':
-    printf("�t���b�g�V�F�[�f�B���O�؂�ւ�\n");
+    printf("フラットシェーディング切り替え\n");
     flat = !flat;
     if(flat){
       smooth = false;
@@ -410,7 +476,7 @@ void keyboard(unsigned char key, int x, int y){
     display();
     break;
   case 's':
-    printf("�X���[�X�V�F�[�f�B���O�؂�ւ�\n");
+    printf("スムースシェーディング切り替え\n");
     smooth = !smooth;
     if(smooth){
       flat = false;
@@ -419,7 +485,7 @@ void keyboard(unsigned char key, int x, int y){
     display();
     break;
   case 'l':
-    printf("���v���V�A��������\n");
+    printf("ラプラシアン平滑化\n");
     laplacianSmoothing();
     if(flat)
       computeTriangleNormals();
@@ -432,7 +498,7 @@ void keyboard(unsigned char key, int x, int y){
     display();
     break;
   case 'c':
-    printf("���ʕ\���؂�ւ�\n");
+    printf("凹凸表示切り替え\n");
     cur = !cur;
     if(cur){
       flat = false;
@@ -444,20 +510,20 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 
-/**********************�������Ȃ��Ƃ悢�Ƃ��낱���܂�***********************/
+/**********************理解しなくとよいところここまで***********************/
 
 int main(int argc, char** argv){
-  //�ۑ� 1-2 : �F�X���b�V���̃t�@�C����ς��Ă݂�
-  //�ۑ� 1-3 �� 2-3 : �����ō�����s���~�b�h�̃t�@�C����ǂݍ���
-  //�ǂݍ��߂�f�[�^�� "round", "moai", "bunny", "hand", "dino", "igea", "armadillo"
+  //課題 1-2 : 色々メッシュのファイルを変えてみる
+  //課題 1-3 と 2-3 : 自分で作ったピラミッドのファイルを読み込む
+  //読み込めるデータは "round", "moai", "bunny", "hand", "dino", "igea", "armadillo"
   readMesh("data/bunny");
   
-  normalizeSize(4); //���b�V���̑傫�������E�ɍ����悤�Ɋg��k������ (�� �����Ƃ͕ς��)
-  computeTriangleNormals(); //�O�p�`�@�����v�Z����
-  computeVertexNormals(); //���_�@�����v�Z����
-  computeLaplacians(); //���v���V�A�����v�Z����
+  normalizeSize(4); //メッシュの大きさを視界に合うように拡大縮小する (※ 実寸とは変わる)
+  computeTriangleNormals(); //三角形法線を計算する
+  computeVertexNormals(); //頂点法線を計算する
+  computeLaplacians(); //ラプラシアンを計算する
   
-  //��]�Ȃǂ̏�����
+  //回転などの初期化
   qw = 1;
   qx = qy =  qz = 0;
   zoom = 1;
@@ -467,21 +533,21 @@ int main(int argc, char** argv){
   cur = false;
   smooth = false;
   
-  //�E�B���h�E�̏�����
+  //ウィンドウの初期化
   glutInit(&argc, argv); 
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); //�g�p����o�b�t�@�̐ݒ�
-  glutInitWindowSize(800, 800); //�E�B���h�E�̑傫��
-  glutCreateWindow("prog3-1"); //�E�B���h�E�̃^�C�g��
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); //使用するバッファの設定
+  glutInitWindowSize(800, 800); //ウィンドウの大きさ
+  glutCreateWindow("prog3-1"); //ウィンドウのタイトル
   
-  myinit(); //OpenGL �̏�����
-  glutReshapeFunc(&myReshape); //�E�B���h�E�T�C�Y���ύX���ꂽ���ɌĂ΂��֐���ݒ�
-  glutDisplayFunc(&display);  //�E�B���h�E�̍X�V�̂��߂̊֐���ݒ�
-  glutMouseFunc(mouse); //�}�E�X�����삳�ꂽ�Ƃ��ɌĂ΂��֐���ݒ�
-  glutKeyboardFunc(keyboard);//�L�[�{�[�h�������ꂽ�Ƃ��ɌĂ΂��֐���ݒ�
+  myinit(); //OpenGL の初期化
+  glutReshapeFunc(&myReshape); //ウィンドウサイズが変更された時に呼ばれる関数を設定
+  glutDisplayFunc(&display);  //ウィンドウの更新のための関数を設定
+  glutMouseFunc(mouse); //マウスが操作されたときに呼ばれる関数を設定
+  glutKeyboardFunc(keyboard);//キーボードが押されたときに呼ばれる関数を設定
   
-  glutMainLoop(); //���C�����[�v
+  glutMainLoop(); //メインループ
   
-  deleteMesh(); //*�}�[�N�̔z��Ŏg���Ă��郁�������J������
+  deleteMesh(); //*マークの配列で使っているメモリを開放する
   
   return 0;
 }
