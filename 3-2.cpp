@@ -44,6 +44,16 @@ void deform(){
     float s[3] = {0,0,0}; // 始めゼロにして値を足していく
     for(int j=0; j<N; j++){
       // ここを埋める (式のΣ記号の中)
+		float vx = ver0[i][0] - c[j][0];
+		float vy = ver0[i][1] - c[j][1];
+		float vz = ver0[i][2] - c[j][2];
+		float d = sqrt(vx * vx + vy * vy + vz * vz) / r[j];
+		if (d < 1) { //変形領域の中にあったときだけ足し算をする
+			float w = (2 * d + 1) * (d - 1) * (d - 1);
+			s[0] += w * t[j][0];
+			s[1] += w * t[j][1];
+			s[2] += w * t[j][2];
+		}
     }
     ver[i][0] = ver0[i][0] + s[0];
     ver[i][1] = ver0[i][1] + s[1];
@@ -183,7 +193,7 @@ void deleteMesh(){
   delete[] norT;
 }
 
-void readMesh(char* file_name){
+void readMesh(const char* file_name){
   /* Read the mesh file */
 	FILE* in;
 	fopen_s(&in,file_name, "r");
