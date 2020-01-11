@@ -2,24 +2,24 @@
 #include <math.h>
 #include <GL/glut.H>
 
-//•`‰æ‚Ì‚½‚ß‚Ì“_‚Ì”
+//æç”»ã®ãŸã‚ã®ç‚¹ã®æ•°
 #define N 100
 
-//‹Èüã‚Ì x À•W ‚Æ y À•W
+//æ›²ç·šä¸Šã® x åº§æ¨™ ã¨ y åº§æ¨™
 float px[N];
 float py[N];
 
-//§Œä“_‚ÌÀ•W
+//åˆ¶å¾¡ç‚¹ã®åº§æ¨™
 float cx[4] = {-0.75, -0.5, 0.5,  0.75};
 float cy[4] = {-0.5,   0.5,  0.5,  -0.5};
 
-//À•W‚ğŒvZ‚·‚éŠÖ”
+//åº§æ¨™ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 void generatePoints(){
   for(int i=0; i<N; i++){
-    //‰Û‘è2-1: ˆÈ‰º‚ğ–„‚ß‚Ä3Ÿ‚ÌƒxƒWƒG‹Èüã‚Ì“_‚ğ px[i] ‚Æ py[i] ‚Ö’l‚ğ‘ã“ü‚·‚é
-    //t ‚âB0,B1,B2,B3 ‚Ü‚Å‚Ì’l‚Í•Ï”‚Öˆê“x‘ã“ü‚µ‚½‚Ù‚¤‚ªŠy
-    //float B0 = ??; ‚È‚Ç‚Æ‚·‚éB
-	  float t = (float)i / (N - 1); //ƒoƒ‰ƒ[ƒ^ t
+    //èª²é¡Œ2-1: ä»¥ä¸‹ã‚’åŸ‹ã‚ã¦3æ¬¡ã®ãƒ™ã‚¸ã‚¨æ›²ç·šä¸Šã®ç‚¹ã‚’ px[i] ã¨ py[i] ã¸å€¤ã‚’ä»£å…¥ã™ã‚‹
+    //t ã‚„B0,B1,B2,B3 ã¾ã§ã®å€¤ã¯å¤‰æ•°ã¸ä¸€åº¦ä»£å…¥ã—ãŸã»ã†ãŒæ¥½
+    //float B0 = ??; ãªã©ã¨ã™ã‚‹ã€‚
+	  float t = (float)i / (N - 1); //ãƒãƒ©ãƒ¡ãƒ¼ã‚¿ t
 
 	  float B0 = (1 - t) * (1 - t) * (1 - t);
 	  float B1 = 3 * (1 - t) * (1 - t) * t;
@@ -30,12 +30,12 @@ void generatePoints(){
   }
 }
 
-//Ü‚êü‚ğ•`‚­ŠÖ”
+//æŠ˜ã‚Œç·šã‚’æãé–¢æ•°
 void drawCurve(){
-  glLineWidth(3); //‘¾‚³
-  glColor3f(0,0,0); //F‚Í•
+  glLineWidth(3); //å¤ªã•
+  glColor3f(0,0,0); //è‰²ã¯é»’
   
-  //‰Û‘è1-2 ‚©‚çƒRƒs[‚·‚é : ŒJ‚è•Ô‚µ‚ğg‚Á‚Äü•ª‚ğ•`‚¢‚Ä‚¢‚­
+  //èª²é¡Œ1-2 ã‹ã‚‰ã‚³ãƒ”ãƒ¼ã™ã‚‹ : ç¹°ã‚Šè¿”ã—ã‚’ä½¿ã£ã¦ç·šåˆ†ã‚’æã„ã¦ã„ã
   glBegin(GL_LINES);
   for (int i = 0; i < N - 1; i++) {
 	  glVertex3f(px[i], py[i], 0);
@@ -43,7 +43,7 @@ void drawCurve(){
   }
   glEnd();
 
-  //‰Û‘è1-2 (‚¨‚Ü‚¯): “_‚ÌF‚ğ•Ï‚¦‚Ä•`‚¢‚Ä‚İ‚é
+  //èª²é¡Œ1-2 (ãŠã¾ã‘): ç‚¹ã®è‰²ã‚’å¤‰ãˆã¦æã„ã¦ã¿ã‚‹
   glPointSize(3);
   glBegin(GL_POINTS);
   for (int i = 0; i < N; i++) {
@@ -57,14 +57,14 @@ void drawCurve(){
 }
 
 void moveControlPoints(float x, float y){
-  //‰Û‘è2-2 : §Œä“_‚ÌˆÚ“®‚ğ‚·‚é
+  //èª²é¡Œ2-2 : åˆ¶å¾¡ç‚¹ã®ç§»å‹•ã‚’ã™ã‚‹
   
-  int k = 0; //k ‚ÍÅ‚à‹ß‚¢§Œä“_‚Ì”Ô† (b’è“I‚É 0 ”Ô‚Æ‚È‚Á‚Ä‚¢‚é)
-  //ˆÈ‰º‚Í (x,y) ‚Æ (cx[0], cy[0]) ‚ÌŠÔ‚Ì‹——£‚Ì2æ
+  int k = 0; //k ã¯æœ€ã‚‚è¿‘ã„åˆ¶å¾¡ç‚¹ã®ç•ªå· (æš«å®šçš„ã« 0 ç•ªã¨ãªã£ã¦ã„ã‚‹)
+  //ä»¥ä¸‹ã¯ (x,y) ã¨ (cx[0], cy[0]) ã®é–“ã®è·é›¢ã®2ä¹—
   float min = (x-cx[0])*(x-cx[0]) + (y-cy[0])*(y-cy[0]);
   
-  //‰Û‘è‚ÍˆÈ‰º‚ğ–„‚ß‚é (‘¼‚Ì§Œä“_‚Æ‚Ì‹——£‚ğŒv‚Á‚Ä k ‚ğXV‚·‚é)
-  //for •¶‚Íg‚Á‚Ä‚à‚Â‚©‚í‚È‚­‚Ä‚à‚æ‚¢
+  //èª²é¡Œã¯ä»¥ä¸‹ã‚’åŸ‹ã‚ã‚‹ (ä»–ã®åˆ¶å¾¡ç‚¹ã¨ã®è·é›¢ã‚’è¨ˆã£ã¦ k ã‚’æ›´æ–°ã™ã‚‹)
+  //for æ–‡ã¯ä½¿ã£ã¦ã‚‚ã¤ã‹ã‚ãªãã¦ã‚‚ã‚ˆã„
   for (int i = 1; i < 4; i++) {
 	  float d = (x - cx[i]) * (x - cx[i]) + (y - cy[i]) * (y - cy[i]);
 	  if (d < min) {
@@ -72,21 +72,21 @@ void moveControlPoints(float x, float y){
 		  k = i;
 	  }
   }
-  //§Œä“_‚ÌXV
+  //åˆ¶å¾¡ç‚¹ã®æ›´æ–°
   cx[k] = x;
   cy[k] = y;
 }
 
-//‹Èüã‚Ì–@üƒxƒNƒgƒ‹ (’·‚³‚Í 1 ‚Æ‚·‚é)
+//æ›²ç·šä¸Šã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ« (é•·ã•ã¯ 1 ã¨ã™ã‚‹)
 float nx[N];
 float ny[N];
 
 void computeNormals(){
   for(int i=0; i<N; i++){
-    //‰Û‘è3-1: ˆÈ‰º‚ğ–„‚ß‚Ä3Ÿ‚ÌƒxƒWƒG‹Èüã‚Ì–@ü‚ğ nx[i] ‚Æ ny[i] ‚Ö’l‚ğ‘ã“ü‚·‚é
+    //èª²é¡Œ3-1: ä»¥ä¸‹ã‚’åŸ‹ã‚ã¦3æ¬¡ã®ãƒ™ã‚¸ã‚¨æ›²ç·šä¸Šã®æ³•ç·šã‚’ nx[i] ã¨ ny[i] ã¸å€¤ã‚’ä»£å…¥ã™ã‚‹
 	  float t = (float)i / (N - 1);
 
-	  //Šî’êŠÖ”‚Ì”÷•ª
+	  //åŸºåº•é–¢æ•°ã®å¾®åˆ†
 	  float dB0 = -3 * (1 - t) * (1 - t);
 	  float dB1 = 3 * (1 - t) * (1 - 3 * t);
 	  float dB2 = 3 * t * (2 - 3 * t);
@@ -96,17 +96,17 @@ void computeNormals(){
 	  float dy = dB0 * cy[0] + dB1 * cy[1] + dB2 * cy[2] + dB3 * cy[3];
 
 	  float l = sqrt(dx * dx + dy * dy);
-	  //–@üƒxƒNƒgƒ‹‚ÍÚüƒxƒNƒgƒ‹‚ğ90“x‰ñ“]‚µ‚½ƒxƒNƒgƒ‹
+	  //æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã¯æ¥ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’90åº¦å›è»¢ã—ãŸãƒ™ã‚¯ãƒˆãƒ«
 	  nx[i] = -dy / l;
 	  ny[i] = dx / l;
   }
 }
 
 void drawOffsetCurves(){
-  glLineWidth(1); //‘¾‚³
-  glColor3f(0,1,1); //F‚Í…F
+  glLineWidth(1); //å¤ªã•
+  glColor3f(0,1,1); //è‰²ã¯æ°´è‰²
   
-  //‰Û‘è3-2 ‚Æ 3-3 : ƒIƒtƒZƒbƒg‹Èü‚ğ•`‚­
+  //èª²é¡Œ3-2 ã¨ 3-3 : ã‚ªãƒ•ã‚»ãƒƒãƒˆæ›²ç·šã‚’æã
   glBegin(GL_LINES);
   for (int j = -10; j <= 10; j++) {
 	  if (j != 0) {
@@ -120,32 +120,65 @@ void drawOffsetCurves(){
   
 }
 
-//‹È—¦”¼Œa
+//æ›²ç‡åŠå¾„
 float R[N];
 
 void computeCurvatureRadius(){
   for(int i=0; i<N; i++){
-    //‰Û‘è4-1: ˆÈ‰º‚ğ–„‚ß‚Ä3Ÿ‚ÌƒxƒWƒG‹Èüã‚Ì‹È—¦”¼Œa‚ğ R[i] ‚Ö’l‚ğ‘ã“ü‚·‚é
-    
+    //èª²é¡Œ4-1: ä»¥ä¸‹ã‚’åŸ‹ã‚ã¦3æ¬¡ã®ãƒ™ã‚¸ã‚¨æ›²ç·šä¸Šã®æ›²ç‡åŠå¾„ã‚’ R[i] ã¸å€¤ã‚’ä»£å…¥ã™ã‚‹
+	  float t = (float)i / (N - 1);
+
+	  //åŸºåº•é–¢æ•°ã®1éšå¾®åˆ†
+	  float dB0 = -3 * (1 - t) * (1 - t);
+	  float dB1 = 3 * (1 - t) * (1 - 3 * t);
+	  float dB2 = 3 * t * (2 - 3 * t);
+	  float dB3 = 3 * t * t;
+
+	  float dx = dB0 * cx[0] + dB1 * cx[1] + dB2 * cx[2] + dB3 * cx[3];
+	  float dy = dB0 * cy[0] + dB1 * cy[1] + dB2 * cy[2] + dB3 * cy[3];
+
+	  //åŸºåº•é–¢æ•°ã®2éšå¾®åˆ†
+	  float ddB0 = 6 * (1 - t);
+	  float ddB1 = 6 * (3 * t - 2);
+	  float ddB2 = 6 * (1 - 3 * t);
+	  float ddB3 = 6 * t;
+
+	  float ddx = ddB0 * cx[0] + ddB1 * cx[1] + ddB2 * cx[2] + ddB3 * cx[3];
+	  float ddy = ddB0 * cy[0] + ddB1 * cy[1] + ddB2 * cy[2] + ddB3 * cy[3];
+
+	  R[i] = pow(dx * dx + dy * dy, 1.5f) / (dx * ddy - dy * ddx);
   }
 }
 
-//k•Âü‚ğ•`‚­ŠÖ”
+//ç¸®é–‰ç·šã‚’æãé–¢æ•°
 void drawEvolue(){
-  glLineWidth(2); //‘¾‚³
-  glColor3f(1,0,0); //F‚ÍÔF
+  glLineWidth(2); //å¤ªã•
+  glColor3f(1,0,0); //è‰²ã¯èµ¤è‰²
   
-  //‰Û‘è4-2 : k•Âü‚ğ•`‚­
-  
+  //èª²é¡Œ4-2 : ç¸®é–‰ç·šã‚’æã
+  /*
+  glBegin(GL_LINES);
+  for (int i = 0; i < N - 1; i++) {
+	  if (R[i] * R[i + 1] > 0) { //æ›²ç‡ã®ç¬¦å·ãŒåŒã˜æ™‚ã®ã¿æã
+		  glVertex3f(px[i] + R[i] * nx[i], py[i] + R[i] * ny[i], 0);
+		  glVertex3f(px[i + 1] + R[i + 1] * nx[i + 1], py[i + 1] + R[i + 1] * ny[i + 1], 0);
+	  }
+	  */
+  glBegin(GL_LINES);
+	  for (int i = 0; i < N; i++) {
+		  glVertex3f(px[i], py[i], 0);
+		  glVertex3f(px[i] + R[i] * nx[i], py[i] + R[i] * ny[i], 0);
+	  }
+  glEnd();
 }
 
-//ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŠÖ”
+//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®é–¢æ•°
 void display(void){ 
-  //ƒXƒNƒŠ[ƒ“‚Æ•ÏŠ·s—ñ‚ğ‰Šú‰»
+  //ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã¨å¤‰æ›è¡Œåˆ—ã‚’åˆæœŸåŒ–
   glClear(GL_COLOR_BUFFER_BIT); 
   glLoadIdentity();
   
-  //À•W²‚ğ•`‚­
+  //åº§æ¨™è»¸ã‚’æã
   glLineWidth(1); 
   glColor3f(0,0,1); 
   glBegin(GL_LINES);
@@ -153,7 +186,7 @@ void display(void){
     glVertex3f(0, -1, 0); glVertex3f(0,  1, 0);
   glEnd();
   
-  //§Œä“_‚ğ•`‚­
+  //åˆ¶å¾¡ç‚¹ã‚’æã
   glLineWidth(2); 
   glColor3f(0,1,0); 
   glBegin(GL_LINE_STRIP);
@@ -171,76 +204,76 @@ void display(void){
     glVertex3f(cx[3], cy[3], 0);
   glEnd();
 
-  //‹Èü‚ğ•`‚­
+  //æ›²ç·šã‚’æã
   drawCurve();
   
-  //ƒIƒtƒZƒbƒg‚ğ•`‚­
+  //ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æã
   drawOffsetCurves();
   
-  //k•Âü‚ğ•`‚­
+  //ç¸®é–‰ç·šã‚’æã
   drawEvolue();
   
-  glFlush(); //ƒXƒNƒŠ[ƒ“‚Ö•\¦
+  glFlush(); //ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã¸è¡¨ç¤º
 } 
 
-//ƒEƒBƒ“ƒhƒE‚Ì‘å‚«‚³‚ª•Ï‚í‚Á‚½‚ÉŒÄ‚Î‚ê‚éŠÖ”
+//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¤§ãã•ãŒå¤‰ã‚ã£ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹é–¢æ•°
 int width, height;
 void myReshape(int w, int h){
   width = w;
   height = h;
   
-  glViewport(0, 0, w, h); //ƒXƒNƒŠ[ƒ“‚Ì‘å‚«‚³‚ğŒˆ‚ß‚é
+  glViewport(0, 0, w, h); //ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å¤§ãã•ã‚’æ±ºã‚ã‚‹
   
-  //•ÏŠ·s—ñ‚ğİ’è
+  //å¤‰æ›è¡Œåˆ—ã‚’è¨­å®š
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
   
-  //•½s“Š‰e‚Ì‚½‚ß‚Ìƒpƒ‰ƒ[ƒ^‚ğİ’è
-  //Œ©‚¦‚é—Ìˆæ‚Í (-1,-1,-1) ‚Æ (1,1,1) ‚ğƒR[ƒi[‚É‚Â—§•û‘Ì‚Ì’†
-  glOrtho(-1, 1, //¶‰E
-          -1, 1, //‰ºã
-          -1, 1 //è‘O‰œ
+  //å¹³è¡ŒæŠ•å½±ã®ãŸã‚ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®š
+  //è¦‹ãˆã‚‹é ˜åŸŸã¯ (-1,-1,-1) ã¨ (1,1,1) ã‚’ã‚³ãƒ¼ãƒŠãƒ¼ã«æŒã¤ç«‹æ–¹ä½“ã®ä¸­
+  glOrtho(-1, 1, //å·¦å³
+          -1, 1, //ä¸‹ä¸Š
+          -1, 1 //æ‰‹å‰å¥¥
           );
   
-  glMatrixMode(GL_MODELVIEW); //}Œ`•`‰æƒ‚[ƒh‚ÖØ‚è‘Ö‚¦
+  glMatrixMode(GL_MODELVIEW); //å›³å½¢æç”»ãƒ¢ãƒ¼ãƒ‰ã¸åˆ‡ã‚Šæ›¿ãˆ
 } 
 
 void myinit(){
-  //”wŒi‚ÌF‚ğİ’è (‚S”Ô–Ú‚Í“§‰ß“x‚Å’Êí‚Í•s“§–¾‚È‚Ì‚Å 1 ‚ğİ’è)
+  //èƒŒæ™¯ã®è‰²ã‚’è¨­å®š (ï¼”ç•ªç›®ã¯é€éåº¦ã§é€šå¸¸ã¯ä¸é€æ˜ãªã®ã§ 1 ã‚’è¨­å®š)
   glClearColor (1, 1, 1, 1);
 
 }
 
-//ƒ}ƒEƒX‘€ì‚ÌŠÖ”
+//ãƒã‚¦ã‚¹æ“ä½œã®é–¢æ•°
 void mouse(int btn, int state, int x, int y){
   moveControlPoints(2*(float)x/width-1, 2*(float)(height-y)/height-1);
   
-  //‹Èüã‚Ì“_‚â”÷•ª’l‚ğÄŒvZ‚·‚é
+  //æ›²ç·šä¸Šã®ç‚¹ã‚„å¾®åˆ†å€¤ã‚’å†è¨ˆç®—ã™ã‚‹
   generatePoints();
   computeNormals();
   computeCurvatureRadius();
   
-  //Ä•`‰æ
+  //å†æç”»
   display();
 }
 
 int main(int argc, char** argv){
-  //‹Èü‚Ì“_‚â”÷•ª’l‚ğŒvZ‚·‚é
+  //æ›²ç·šã®ç‚¹ã‚„å¾®åˆ†å€¤ã‚’è¨ˆç®—ã™ã‚‹
   generatePoints();
   computeNormals();
   computeCurvatureRadius();
   
-  //ƒEƒBƒ“ƒhƒE‚Ì‰Šú‰»
+  //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸåŒ–
   glutInit(&argc, argv); 
-  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); //g—p‚·‚éƒoƒbƒtƒ@‚Ìİ’è
-  glutInitWindowSize(500, 500); //ƒEƒBƒ“ƒhƒE‚Ì‘å‚«‚³
-  glutCreateWindow("1-1"); //ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); //ä½¿ç”¨ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã®è¨­å®š
+  glutInitWindowSize(500, 500); //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¤§ãã•
+  glutCreateWindow("1-1"); //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«
   
-  myinit();//OpenGL ‚Ì‰Šú‰»
-  glutReshapeFunc(myReshape);//ƒEƒBƒ“ƒhƒEƒTƒCƒY‚ª•ÏX‚³‚ê‚½‚ÉŒÄ‚Î‚ê‚éŠÖ”‚ğİ’è
-  glutMouseFunc(mouse); //ƒ}ƒEƒX‚ª‘€ì‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éŠÖ”‚ğİ’è
-  glutDisplayFunc(display); //ƒEƒBƒ“ƒhƒE‚ÌXV‚Ì‚½‚ß‚ÌŠÖ”‚ğİ’è
-  glutMainLoop(); //ƒƒCƒ“ƒ‹[ƒv
+  myinit();//OpenGL ã®åˆæœŸåŒ–
+  glutReshapeFunc(myReshape);//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹é–¢æ•°ã‚’è¨­å®š
+  glutMouseFunc(mouse); //ãƒã‚¦ã‚¹ãŒæ“ä½œã•ã‚ŒãŸã¨ãã«å‘¼ã°ã‚Œã‚‹é–¢æ•°ã‚’è¨­å®š
+  glutDisplayFunc(display); //ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ›´æ–°ã®ãŸã‚ã®é–¢æ•°ã‚’è¨­å®š
+  glutMainLoop(); //ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
   
   return 0;
 }
