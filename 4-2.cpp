@@ -2,6 +2,7 @@
 #include <math.h>
 #include <GL/glut.H>
 
+//v0.1
 //描画のための点の数
 #define N 100
 
@@ -215,9 +216,9 @@ void display(void){
   
   glFlush(); //スクリーンへ表示
 } 
-
 //ウィンドウの大きさが変わった時に呼ばれる関数
 int width, height;
+
 void myReshape(int w, int h){
   width = w;
   height = h;
